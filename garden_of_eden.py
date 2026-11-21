@@ -2,7 +2,7 @@ from pysat.solvers import Glucose3
 from pysat.formula import CNF
 import itertools
 
-solver = Glucose3()
+solver = Glucose3(use_timer=True)
 allClauses = []
 
 
@@ -126,6 +126,10 @@ def __main__():
         print("Not a Garden of Eden.")
     else:
         print("Garden of Eden!")
+
+
+    print(f"Solver working time: {solver.time()}")
+    
 
 
 
