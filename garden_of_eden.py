@@ -1,7 +1,9 @@
 from pysat.solvers import Glucose3
+from pysat.formula import CNF
 import itertools
 
 solver = Glucose3()
+allClauses = []
 
 
 def getCellID(x, y, width, height, isCurrGen):
@@ -80,14 +82,18 @@ def checkAllPossibleAncestors(solver, width, height):
 
             for clause in currCellClauses:
                 solver.add_clause(clause)
+                allClauses.append(clause)
 
     solver.add_clause([-999999])
+    allClauses.append([-999999])
 
 def __main__():
     inputWidth = int(input("Width: "))
     inputHeight = int(input("Height: "))
 
     matrix = []
+
+    print("Configuration:\n")
 
     for _ in range(inputHeight):
         line = input().strip()
@@ -101,14 +107,25 @@ def __main__():
 
             if (matrix[yCoordinate][xCoordinate] == "1"):
                 solver.add_clause([cellID])
+                allClauses.append([cellID])
             else:
                 solver.add_clause([-cellID])
+                allClauses.append([-cellID])
+
+    dimacsFile = open("dimacs.cnf", "w")
+
+    dimacsFile.write(f"p cnf {2*inputWidth*inputHeight+1} {512-inputWidth*inputHeight+inputWidth*inputHeight+1}\n")
+
+    for clause in allClauses:
+        for variable in clause:
+            dimacsFile.write(f"{variable} ")
+        dimacsFile.write("0\n")
 
 
     if solver.solve():
-        print("Not a garden")
+        print("Not a Garden of Eden.")
     else:
-        print("garden")
+        print("Garden of Eden!")
 
 
 
